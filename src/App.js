@@ -1,6 +1,8 @@
 import { Component } from 'react';
-import logo from './logo.svg';
+//import logo from './logo.svg';
 import './App.css';
+import CardList from './components/card-lists/card-list.component';
+import SearchBox from './components/search-box/search-box.component';
 //import { render } from '@testing-library/react';
 
 class App extends Component {
@@ -9,23 +11,8 @@ class App extends Component {
     super();
     this.state = {
       profiles: [],
-      // name: {first_name: 'Asif', last_name: 'Ahmed'},
-      // company: 'BJIT'
-      // profiles:[
-      //   {
-      //     id: '1',
-      //     name: 'Asif Ahmed'
-      //   },
-      //   {
-      //     id: '2',
-      //     name: 'Javed Nayeem'
-      //   },
-      //   {
-      //     id: '3',
-      //     name: 'Raju Ahmed'
-      //   }
-      // ]
-    } // object
+      searchField: '',
+    }
   }
 
   componentDidMount(){
@@ -36,45 +23,34 @@ class App extends Component {
       return { profiles: users };
     },
     ()=>{
-      console.log(this.state);
+      //console.log(this.state);
     }
     ));
   }
 
+  onSearchChange = (event)=>{
+      //console.log(event.target.value);
+      const searchField = event.target.value.toLocaleLowerCase();
+      
+      this.setState(()=>{
+        return { searchField };
+      });
+  }
+
   render() {
+
+    const {profiles, searchField} = this.state;
+    const {onSearchChange} = this;
+
+    const filteredMonsters = profiles.filter((profile)=>{
+      return profile.name.toLocaleLowerCase().includes(searchField);
+    });
+
     return (
       <div className="App">
-        <input className='search-box' type='search' placeholder='Search Here' onChange={(event)=>{console.log(event)}} />
-        {/* <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          
-          <p>Hi {this.state.name.first_name} {this.state.name.last_name}, I worked at {this.state.company}</p>
-          <button onClick={()=>{
-            //this.setState({ name: {first_name: 'Arshan', last_name: 'Ahmed'} });
-            this.setState(()=>{
-              return {
-                name: {first_name: 'Arshan', last_name: 'Ahmed'},
-              }
-            },
-            ()=>{
-              console.log(this.state);
-            } // follow-up call back
-            );
-          }}>Change Name</button>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Hello I am Asif
-          </a>
-        </header> */}
-        {
-          this.state.profiles.map((profile)=>{
-            return <h1 key={profile.name}>{profile.name}</h1>
-          })
-        }
+        <h1 className='app-title'>Monsters Rolodex</h1>
+        <SearchBox onChangeHandler={onSearchChange} placeholder={'Search Monsters'} className={'monsters-search-box'} />
+        <CardList monsters={filteredMonsters} />
       </div>
     );
   }
